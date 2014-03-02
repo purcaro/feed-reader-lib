@@ -20,3 +20,5 @@ TAGS
 \#*
 .\#*
 *.core
+bin/
+build/
