@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# by purcaro@gmail.com
-
 import subprocess, sys, os, argparse
 from scripts.utils import Utils
 from collections import namedtuple

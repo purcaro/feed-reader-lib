@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-"purcaro@gmail.com"
-
 import urllib, os, shutil, tarfile, multiprocessing, subprocess, sys
 
 class Utils:
