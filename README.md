@@ -1,12 +1,9 @@
 feed-reader-lib
 ===============
-
 Fast, thread-safe, extensible &amp; platform independent feed reader library in C++, supports RSS, ATOM, RDF
 
 ===============
 Features:
-
-FeedReader was designed to scale: it is fast, thread-safe, extensible and platform-independent.
 
 In FeedReader, all feeds are transformed via XSL to a uniform schema before being parsed.
 This means that in order to extend FeedReader to support a new feed format, all that is needed is a new XSL file.
