@@ -46,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
 namespace FeedReader
 {
 	bool Feed::m_initialized = false;
-	boost::recursive_mutex Feed::m_stateMutex = boost::recursive_mutex();
+boost::recursive_mutex Feed::m_stateMutex;
 
 	Feed::Feed(const std::string& url, const FeedConfig& feedConfig) :
 		m_etag(),
@@ -107,7 +107,7 @@ namespace FeedReader
 					CreateEntries(m_feedData);
 				}
 				return;
-			} 
+			}
 		case 304:
 			{
 				m_valid = true;
@@ -134,7 +134,7 @@ namespace FeedReader
 			return;
 		}
 
-		const xercesc_2_8::DOMNodeList* const children = 
+		const xercesc_2_8::DOMNodeList* const children =
 							parser.getDocument()->getChildNodes()->item(0)->getChildNodes();
 		for (XMLSize_t i = 0, listLength = children->getLength(); i < listLength; ++i)
 		{
@@ -152,15 +152,15 @@ namespace FeedReader
 			else
 			{
 				const std::string textContent = XmlCharsToStdString(node->getTextContent());
-				m_feedElements[nodeName] = textContent; 
+				m_feedElements[nodeName] = textContent;
 			}
 		}
 	}
 
 	void Feed::AddEntryToList(const Entry& entry)
 	{
-		const Entries::iterator findResult = std::find_if(m_entries.begin(), 
-														  m_entries.end(), 
+		const Entries::iterator findResult = std::find_if(m_entries.begin(),
+														  m_entries.end(),
 														  EntryUniqueIdPredicate(entry.UniqueId));
 		if (findResult == m_entries.end())
 		{
@@ -182,7 +182,7 @@ namespace FeedReader
 			Feed::m_initialized = true;
 		}
 	}
-		
+
 	void Feed::SetValidity(bool valid)
 	{
 		m_valid = valid;

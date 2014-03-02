@@ -11,3 +11,12 @@
 *.lai
 *.la
 *.a
+
+*~
+*.out
+external/
+*.pyc
+TAGS
+\#*
+.\#*
+*.core
