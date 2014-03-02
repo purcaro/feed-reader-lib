@@ -40,43 +40,49 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <xercesc/dom/DOMNode.hpp>
 
-namespace FeedReader
-{
-	static const std::string XERCESC_EMPTY_NODE_NAME = "#text";
+namespace FeedReader {
+static const std::string XERCESC_EMPTY_NODE_NAME = "#text";
 
-	class FEED_EXPORT Entry 
-	{
-	private:
-		typedef std::map< std::string, std::string > EntryElements;
-		EntryElements				m_entryElements;
+class FEED_EXPORT Entry {
+ private:
+  typedef std::map<std::string, std::string> EntryElements;
+  EntryElements m_entryElements;
 
-	public:
-		std::string					UniqueId;
-		boost::posix_time::ptime	Published;
-		bool						IsLive;
+ public:
+  std::string UniqueId;
+  boost::posix_time::ptime Published;
+  bool IsLive;
 
-	private:
-		void ParseNodeData(const ::xercesc_2_8::DOMNode* const entryNode);
+ private:
+  void ParseNodeData(const ::xercesc_2_8::DOMNode* const entryNode);
 
-	public:
-		Entry(const xercesc_2_8::DOMNode* const entryNode);
-		Entry(const Entry& other);
-		Entry& operator= (const Entry& other);
+ public:
+  Entry(const xercesc_2_8::DOMNode* const entryNode);
+  Entry(const Entry& other);
+  Entry& operator=(const Entry& other);
 
-		const std::string& operator[](const std::string& node) const;
-		void Print(std::ostream& os) const;
+  const std::string& operator[](const std::string& node) const;
+  void Print(std::ostream& os) const;
 
-		// iterator interface to entry elements
-		typedef EntryElements::const_iterator entry_element_iterator;
-		typedef EntryElements::const_reverse_iterator reverse_entry_element_iterator;
+  // iterator interface to entry elements
+  typedef EntryElements::const_iterator entry_element_iterator;
+  typedef EntryElements::const_reverse_iterator reverse_entry_element_iterator;
 
-		entry_element_iterator begin_entry_elements() const { return m_entryElements.begin(); }
-		entry_element_iterator end_entry_elements() const { return m_entryElements.end(); }
-		reverse_entry_element_iterator rbegin_entry_elements() const { return m_entryElements.rbegin(); }
-		reverse_entry_element_iterator rend_entry_elements() const { return m_entryElements.rend(); }
+  entry_element_iterator begin_entry_elements() const {
+    return m_entryElements.begin();
+  }
+  entry_element_iterator end_entry_elements() const {
+    return m_entryElements.end();
+  }
+  reverse_entry_element_iterator rbegin_entry_elements() const {
+    return m_entryElements.rbegin();
+  }
+  reverse_entry_element_iterator rend_entry_elements() const {
+    return m_entryElements.rend();
+  }
 
-		int num_entry_elements() const { return (int)m_entryElements.size(); }
-	};
+  int num_entry_elements() const { return (int)m_entryElements.size(); }
+};
 }
 
 #endif

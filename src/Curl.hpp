@@ -40,46 +40,51 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "export_cfg.hpp"
 #define nullptr 0
 
-namespace cURL
-{
-	static const int CURL_MAX_REDIRECTS = 10;
+namespace cURL {
+static const int CURL_MAX_REDIRECTS = 10;
 
-	class GlobalState 
-	{
-	public:
-		GlobalState();
-		~GlobalState();
+class GlobalState {
+ public:
+  GlobalState();
+  ~GlobalState();
 
-	private:
-		GlobalState(const GlobalState& globalState) { } // disallow copying
-	};
+ private:
+  GlobalState(const GlobalState& globalState) {}  // disallow copying
+};
 
-	class EasyInterface 
-	{
-	public:
-		EasyInterface(const std::string& url,const std::string& etag, bool compress = false);
-		~EasyInterface();
+class EasyInterface {
+ public:
+  EasyInterface(const std::string& url, const std::string& etag,
+                bool compress = false);
+  ~EasyInterface();
 
-		const std::string& GetResponseData() const;
-		const std::vector< std::string >& GetResponseHeaders() const;
-		long PerformRequest();
-		std::string GetResponseEtag() const;
-		void SetProgressOn();
-		const char* GetErrors() {return m_errorBuffer;};
-	private:
-		EasyInterface(const EasyInterface& easy) : m_curlHandle(nullptr) { } // disallow copying
-		static size_t WriteFunction(void* data, size_t mult, size_t size, void* state);
-		static size_t HeaderFunction(void* data, size_t mult, size_t size, void* state);
-		long GetResponseCode() const;
-		void HandleWriteData(const char* data, const size_t dataSize);
-		void HandleHeaderData(const char* data, const size_t dataSize);
-	private:
-		CURL* const					m_curlHandle;
-		const std::string			m_url;
-		curl_slist*					m_requestHeaders;
-		std::string					m_responseData;
-		std::vector< std::string >	m_responseHeaders;
-		char						m_errorBuffer[CURL_ERROR_SIZE];
-	};
+  const std::string& GetResponseData() const;
+  const std::vector<std::string>& GetResponseHeaders() const;
+  long PerformRequest();
+  std::string GetResponseEtag() const;
+  void SetProgressOn();
+  const char* GetErrors() {
+    return m_errorBuffer;
+  };
+
+ private:
+  EasyInterface(const EasyInterface& easy)
+      : m_curlHandle(nullptr) {}  // disallow copying
+  static size_t WriteFunction(void* data, size_t mult, size_t size,
+                              void* state);
+  static size_t HeaderFunction(void* data, size_t mult, size_t size,
+                               void* state);
+  long GetResponseCode() const;
+  void HandleWriteData(const char* data, const size_t dataSize);
+  void HandleHeaderData(const char* data, const size_t dataSize);
+
+ private:
+  CURL* const m_curlHandle;
+  const std::string m_url;
+  curl_slist* m_requestHeaders;
+  std::string m_responseData;
+  std::vector<std::string> m_responseHeaders;
+  char m_errorBuffer[CURL_ERROR_SIZE];
+};
 }
 #endif

@@ -39,35 +39,25 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <xercesc/util/XMLString.hpp>
 
+namespace FeedReader {
 
-namespace FeedReader
-{
+std::string XmlCharsToStdString(const XMLCh* const xmlChars) {
+  char* stdChars = xercesc_2_8::XMLString::transcode(xmlChars);
+  const std::string result = std::string(stdChars);
+  xercesc_2_8::XMLString::release(&stdChars);
+  return result;
+}
 
-	std::string XmlCharsToStdString(const XMLCh* const xmlChars)
-	{
-		char* stdChars = xercesc_2_8::XMLString::transcode(xmlChars);
-		const std::string result = std::string(stdChars);
-		xercesc_2_8::XMLString::release(&stdChars);
-		return result;
-	}
+FeedUrlPredicate::FeedUrlPredicate(const std::string& url) : _url(url) {}
 
-	FeedUrlPredicate::FeedUrlPredicate(const std::string& url) :
-		_url(url)
-	{
-	}
+bool FeedUrlPredicate::operator()(const Feed& feed) const {
+  return boost::algorithm::iequals(_url, feed.GetUrl());
+}
 
-	bool FeedUrlPredicate::operator()(const Feed& feed) const
-	{
-		return boost::algorithm::iequals(_url, feed.GetUrl());
-	}
+EntryUniqueIdPredicate::EntryUniqueIdPredicate(const std::string& uniqueId)
+    : _uniqueId(uniqueId) {}
 
-	EntryUniqueIdPredicate::EntryUniqueIdPredicate(const std::string& uniqueId) :
-		_uniqueId(uniqueId)
-	{
-	}
-
-	bool EntryUniqueIdPredicate::operator()(const Entry& entry) const
-	{
-		return boost::algorithm::iequals(_uniqueId, entry.UniqueId);
-	}
+bool EntryUniqueIdPredicate::operator()(const Entry& entry) const {
+  return boost::algorithm::iequals(_uniqueId, entry.UniqueId);
+}
 }

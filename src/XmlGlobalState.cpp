@@ -36,28 +36,23 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 #include <xalanc/XalanTransformer/XalanTransformer.hpp>
 
-namespace FeedReader
-{
-	XmlGlobalState::XmlGlobalState()
-	{
-		try
-		{
-			xercesc_2_8::XMLPlatformUtils::Initialize();
-			xalanc_1_10::XalanTransformer::initialize();
-		}
-		catch(const xercesc_2_8::XMLException &xe)
-		{
-			char* message = xercesc_2_8::XMLString::transcode( xe.getMessage() ) ;
-			std::cout << "Error during Xerces-c Initialization: "
-					  << message << std::endl;
-			xercesc_2_8::XMLString::release( &message ) ;
-			throw;
-		}
-	}
+namespace FeedReader {
+XmlGlobalState::XmlGlobalState() {
+  try {
+    xercesc_2_8::XMLPlatformUtils::Initialize();
+    xalanc_1_10::XalanTransformer::initialize();
+  }
+  catch (const xercesc_2_8::XMLException& xe) {
+    char* message = xercesc_2_8::XMLString::transcode(xe.getMessage());
+    std::cout << "Error during Xerces-c Initialization: " << message
+              << std::endl;
+    xercesc_2_8::XMLString::release(&message);
+    throw;
+  }
+}
 
-	XmlGlobalState::~XmlGlobalState()
-	{
-		xalanc_1_10::XalanTransformer::terminate();
-		xercesc_2_8::XMLPlatformUtils::Terminate();
-	}
+XmlGlobalState::~XmlGlobalState() {
+  xalanc_1_10::XalanTransformer::terminate();
+  xercesc_2_8::XMLPlatformUtils::Terminate();
+}
 }

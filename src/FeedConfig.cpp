@@ -32,16 +32,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "FeedConfig.hpp"
 
-namespace FeedReader
-{
-	FeedConfig::FeedConfig(const boost::filesystem::path& config_path)
-		: m_config_path(config_path)
-	{
-		// default feed types
-		m_feed_types.push_back(std::make_pair("RSS_20_xsl.xml","Rss20"));
-		m_feed_types.push_back(std::make_pair("Atom_10_xsl.xml","Atom10"));
-		m_feed_types.push_back(std::make_pair("Atom_03_xsl.xml","Atom03"));
-		m_feed_types.push_back(std::make_pair("RDF_xsl.xml","RDF"));
-	}
+namespace FeedReader {
+FeedConfig::FeedConfig(const boost::filesystem::path& config_path)
+    : m_config_path(config_path) {
+  // default feed types
+  m_feed_types.push_back(std::make_pair("RSS_20_xsl.xml", "Rss20"));
+  m_feed_types.push_back(std::make_pair("Atom_10_xsl.xml", "Atom10"));
+  m_feed_types.push_back(std::make_pair("Atom_03_xsl.xml", "Atom03"));
+  m_feed_types.push_back(std::make_pair("RDF_xsl.xml", "RDF"));
 }
-
+}

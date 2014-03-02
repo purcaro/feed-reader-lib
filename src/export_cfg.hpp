@@ -35,32 +35,30 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/config.hpp>
 
-
 #if defined(__GNUC__) && __GNUC__ >= 4
 
-# if defined(SCRAPER_BUILDING_SHARED) || defined(SCRAPER_LINKING_SHARED)
-#  define FEED_EXPORT __attribute__ ((visibility("default")))
-# else
-#  define FEED_EXPORT
-# endif
+#if defined(SCRAPER_BUILDING_SHARED) || defined(SCRAPER_LINKING_SHARED)
+#define FEED_EXPORT __attribute__((visibility("default")))
+#else
+#define FEED_EXPORT
+#endif
 
 #elif defined(__GNUC__)
 
-# define FEED_EXPORT
+#define FEED_EXPORT
 
 #elif defined(BOOST_MSVC)
 
-# if defined(FEEDREADER_BUILDING_SHARED)
-#  define FEED_EXPORT __declspec(dllexport)
-# elif defined(FEEDREADER_LINKING_SHARED)
-#  define FEED_EXPORT __declspec(dllimport)
-# else
-#  define FEED_EXPORT
-# endif
-
+#if defined(FEEDREADER_BUILDING_SHARED)
+#define FEED_EXPORT __declspec(dllexport)
+#elif defined(FEEDREADER_LINKING_SHARED)
+#define FEED_EXPORT __declspec(dllimport)
 #else
-# define _CONFIG_HPP_INCLUDED
+#define FEED_EXPORT
 #endif
 
-#endif // SCRAPER_CONFIG_HPP_INCLUDED
+#else
+#define _CONFIG_HPP_INCLUDED
+#endif
 
+#endif  // SCRAPER_CONFIG_HPP_INCLUDED

@@ -39,26 +39,27 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Feed.hpp"
 
 // this is the size of the standard header placed by all xsl templates:
-// 
+//
 static const int XML_HEADER_SIZE = 42;
 
-namespace FeedReader
-{
-	class FeedValidator 
-	{
-	public:
-		FeedValidator(const std::string& feedData, Feed& feed);
+namespace FeedReader {
+class FeedValidator {
+ public:
+  FeedValidator(const std::string& feedData, Feed& feed);
 
-		void Validate(std::string& results);
-	private:
-		void ValidateFeedFormat(const std::string& xslPath, FeedFormat feedFormat, std::string& results);
-		void TransformFeed(std::stringstream& xslStream, std::string& results);
-		bool ValidateFeed(const std::string& feed) const;
-	private:
-		const std::string&	m_feedData;
-		Feed&				m_feed;
-		bool				m_validationValid;
-	};
+  void Validate(std::string& results);
+
+ private:
+  void ValidateFeedFormat(const std::string& xslPath, FeedFormat feedFormat,
+                          std::string& results);
+  void TransformFeed(std::stringstream& xslStream, std::string& results);
+  bool ValidateFeed(const std::string& feed) const;
+
+ private:
+  const std::string& m_feedData;
+  Feed& m_feed;
+  bool m_validationValid;
+};
 }
 
 #endif

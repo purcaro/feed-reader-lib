@@ -37,29 +37,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Feed.hpp"
 
-namespace FeedReader
-{
-	std::string XmlCharsToStdString(const XMLCh* const xmlChars);
+namespace FeedReader {
+std::string XmlCharsToStdString(const XMLCh* const xmlChars);
 
-	class FeedUrlPredicate 
-	{
-		const std::string& _url;
+class FeedUrlPredicate {
+  const std::string& _url;
 
-	public:
-		FeedUrlPredicate(const std::string& url);
+ public:
+  FeedUrlPredicate(const std::string& url);
 
-		bool operator()(const Feed& feed) const;
-	};
+  bool operator()(const Feed& feed) const;
+};
 
-	class EntryUniqueIdPredicate 
-	{
-		const std::string& _uniqueId;
+class EntryUniqueIdPredicate {
+  const std::string& _uniqueId;
 
-	public:
-		EntryUniqueIdPredicate(const std::string& uniqueId);
+ public:
+  EntryUniqueIdPredicate(const std::string& uniqueId);
 
-		bool operator()(const Entry& entry) const;
-	};
+  bool operator()(const Entry& entry) const;
+};
 }
 
 #endif

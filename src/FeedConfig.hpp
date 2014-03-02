@@ -41,21 +41,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "export_cfg.hpp"
 
-namespace FeedReader
-{
-	typedef std::string FeedFormat;
-	typedef std::vector < std::pair<std::string, FeedFormat> > FeedTypes;
+namespace FeedReader {
+typedef std::string FeedFormat;
+typedef std::vector<std::pair<std::string, FeedFormat> > FeedTypes;
 
-	const static FeedFormat UNKNOWN_FEED_TYPE = "Unknown";
+const static FeedFormat UNKNOWN_FEED_TYPE = "Unknown";
 
-	class FEED_EXPORT FeedConfig
-	{
-	public:
-		FeedConfig(const boost::filesystem::path& config_path = boost::filesystem::initial_path());
+class FEED_EXPORT FeedConfig {
+ public:
+  FeedConfig(const boost::filesystem::path& config_path =
+                 boost::filesystem::initial_path());
 
-		boost::filesystem::path m_config_path;
-		FeedTypes				m_feed_types;
-	};
+  boost::filesystem::path m_config_path;
+  FeedTypes m_feed_types;
+};
 }
 
 #endif

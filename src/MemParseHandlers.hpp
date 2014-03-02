@@ -36,19 +36,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <xercesc/sax/HandlerBase.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 
-class MemParseHandlers : public ::xercesc_2_8::HandlerBase
-{
-	bool _success;
+class MemParseHandlers : public ::xercesc_2_8::HandlerBase {
+  bool _success;
 
-public:
-	MemParseHandlers();
+ public:
+  MemParseHandlers();
 
-public:
-	bool GetSuccess();
+ public:
+  bool GetSuccess();
 
-public:
-	virtual void error(const ::xercesc_2_8::SAXParseException& ex);
-	virtual void fatalError(const ::xercesc_2_8::SAXParseException& ex);
+ public:
+  virtual void error(const ::xercesc_2_8::SAXParseException& ex);
+  virtual void fatalError(const ::xercesc_2_8::SAXParseException& ex);
 };
 
 #endif

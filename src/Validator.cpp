@@ -44,114 +44,105 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Validator.hpp"
 #include "MemParseHandlers.hpp"
 
-namespace FeedReader
-{
-	FeedValidator::FeedValidator(const std::string& feedData, Feed& feed) :
-		m_feedData(feedData),
-		m_feed(feed),
-		m_validationValid(true)
-	{
-	}
+namespace FeedReader {
+FeedValidator::FeedValidator(const std::string& feedData, Feed& feed)
+    : m_feedData(feedData), m_feed(feed), m_validationValid(true) {}
 
-	void FeedValidator::Validate(std::string& results)
-	{
-		try
-		{
-			const FeedConfig& feedConfig = m_feed.GetFeedConfig();
-			for (FeedTypes::const_iterator itr = feedConfig.m_feed_types.begin(),
-				 eitr = feedConfig.m_feed_types.end();itr != eitr; ++itr)
-			{
-				ValidateFeedFormat(itr->first,itr->second,results);
-				if (!results.empty())
-				{
-					return;
-				}
-			}
-		}
-		catch (const xercesc_2_8::XMLException& e)
-		{
-			std::stringstream msg;
-			msg << "An error occurred during feed parsing: '"
-				<< XmlCharsToStdString(e.getMessage());
-			throw feed_exception(msg.str());
-		}
-		catch (const xercesc_2_8::DOMException& e)
-		{
-			const unsigned int maxChars = 2047;
-			XMLCh errText[maxChars + 1];
+void FeedValidator::Validate(std::string& results) {
+  try {
+    const FeedConfig& feedConfig = m_feed.GetFeedConfig();
+    for (FeedTypes::const_iterator itr = feedConfig.m_feed_types.begin(),
+                                   eitr = feedConfig.m_feed_types.end();
+         itr != eitr; ++itr) {
+      ValidateFeedFormat(itr->first, itr->second, results);
+      if (!results.empty()) {
+        return;
+      }
+    }
+  }
+  catch (const xercesc_2_8::XMLException& e) {
+    std::stringstream msg;
+    msg << "An error occurred during feed parsing: '"
+        << XmlCharsToStdString(e.getMessage());
+    throw feed_exception(msg.str());
+  }
+  catch (const xercesc_2_8::DOMException& e) {
+    const unsigned int maxChars = 2047;
+    XMLCh errText[maxChars + 1];
 
-			std::stringstream msg;
-			msg << "DOM Error occurred during feed parsing. Code is:  " << e.code << ".";
+    std::stringstream msg;
+    msg << "DOM Error occurred during feed parsing. Code is:  " << e.code
+        << ".";
 
-			if (xercesc_2_8::DOMImplementation::loadDOMExceptionMsg(e.code, errText, maxChars))
-				msg << " Message is: " << XmlCharsToStdString(errText) << ".";
-			throw feed_exception(msg.str());
-		}
-		m_feed.SetValidity(false);
-		m_feed.SetFeedFormat("Unknown");
-	}
+    if (xercesc_2_8::DOMImplementation::loadDOMExceptionMsg(e.code, errText,
+                                                            maxChars))
+      msg << " Message is: " << XmlCharsToStdString(errText) << ".";
+    throw feed_exception(msg.str());
+  }
+  m_feed.SetValidity(false);
+  m_feed.SetFeedFormat("Unknown");
+}
 
-	void FeedValidator::ValidateFeedFormat(const std::string& xslPath, FeedFormat feedFormat, 
-										   std::string& results)
-	{
-		boost::filesystem::path fullFileName(m_feed.GetFeedConfig().m_config_path);
-		fullFileName /= xslPath;
+void FeedValidator::ValidateFeedFormat(const std::string& xslPath,
+                                       FeedFormat feedFormat,
+                                       std::string& results) {
+  boost::filesystem::path fullFileName(m_feed.GetFeedConfig().m_config_path);
+  fullFileName /= xslPath;
 
-		std::ifstream xslFile(fullFileName.string().c_str(), std::ios_base::binary | std::ios_base::in);
-		if (!xslFile)
-		{
-			std::stringstream msg;
-			msg << "FeedValidator: Unable to open XSL file: '" << xslPath << "'";
-			throw feed_exception(msg.str());
-		}
+  std::ifstream xslFile(fullFileName.string().c_str(),
+                        std::ios_base::binary | std::ios_base::in);
+  if (!xslFile) {
+    std::stringstream msg;
+    msg << "FeedValidator: Unable to open XSL file: '" << xslPath << "'";
+    throw feed_exception(msg.str());
+  }
 
-		std::stringstream xslStream;
-		xslFile.get(*xslStream.rdbuf(), '\0');
-		xslStream.seekg(std::stringstream::beg);
+  std::stringstream xslStream;
+  xslFile.get(*xslStream.rdbuf(), '\0');
+  xslStream.seekg(std::stringstream::beg);
 
-		TransformFeed(xslStream, results);
-		if (!results.empty() && ValidateFeed(results))
-		{
-			m_feed.SetFeedFormat(feedFormat);
-			m_feed.SetValidity(true);
-			return;
-		}
-		
-		return;
-	}
+  TransformFeed(xslStream, results);
+  if (!results.empty() && ValidateFeed(results)) {
+    m_feed.SetFeedFormat(feedFormat);
+    m_feed.SetValidity(true);
+    return;
+  }
 
-	void FeedValidator::TransformFeed(std::stringstream& xslStream, std::string& results)
-	{
-		std::stringstream result;
-		xalanc_1_10::XalanTransformer trans;
-		std::stringstream xmlStream(m_feedData);
-		const xalanc_1_10::XSLTInputSource xmlIn(xmlStream);
-		const xalanc_1_10::XSLTInputSource xslIn(xslStream);
-		const xalanc_1_10::XSLTResultTarget xmlOut(result);
-		
-		int	theResult = -1;
-		theResult = trans.transform(xmlIn, xslIn, xmlOut);
-		if(theResult != 0)
-		{
-			std::stringstream msg;
-			msg << "An error occurred while applying XSLT transformation to feed: " << trans.getLastError();
-			throw feed_exception(msg.str());
-		}
+  return;
+}
 
-		results = result.str();
-		}
+void FeedValidator::TransformFeed(std::stringstream& xslStream,
+                                  std::string& results) {
+  std::stringstream result;
+  xalanc_1_10::XalanTransformer trans;
+  std::stringstream xmlStream(m_feedData);
+  const xalanc_1_10::XSLTInputSource xmlIn(xmlStream);
+  const xalanc_1_10::XSLTInputSource xslIn(xslStream);
+  const xalanc_1_10::XSLTResultTarget xmlOut(result);
 
-	bool FeedValidator::ValidateFeed(const std::string& feed) const
-	{
-		MemParseHandlers handler;
-		const xercesc_2_8::MemBufInputSource input(reinterpret_cast<const XMLByte*>(feed.c_str()), feed.size(), "c:/");
+  int theResult = -1;
+  theResult = trans.transform(xmlIn, xslIn, xmlOut);
+  if (theResult != 0) {
+    std::stringstream msg;
+    msg << "An error occurred while applying XSLT transformation to feed: "
+        << trans.getLastError();
+    throw feed_exception(msg.str());
+  }
 
-		xercesc_2_8::XercesDOMParser parser;
-		parser.setValidationScheme(xercesc_2_8::XercesDOMParser::Val_Never);
-		parser.setErrorHandler(&handler);
+  results = result.str();
+}
 
-		parser.parse(input);
+bool FeedValidator::ValidateFeed(const std::string& feed) const {
+  MemParseHandlers handler;
+  const xercesc_2_8::MemBufInputSource input(
+      reinterpret_cast<const XMLByte*>(feed.c_str()), feed.size(), "c:/");
 
-		return handler.GetSuccess();
-	}
+  xercesc_2_8::XercesDOMParser parser;
+  parser.setValidationScheme(xercesc_2_8::XercesDOMParser::Val_Never);
+  parser.setErrorHandler(&handler);
+
+  parser.parse(input);
+
+  return handler.GetSuccess();
+}
 }

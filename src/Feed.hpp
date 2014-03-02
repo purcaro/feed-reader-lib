@@ -44,77 +44,82 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Entry.hpp"
 #include "FeedConfig.hpp"
 
-namespace FeedReader
-{
-	typedef std::vector< Entry > Entries;
+namespace FeedReader {
+typedef std::vector<Entry> Entries;
 
-	// exception
-	class FEED_EXPORT feed_exception : public std::runtime_error
-	{
-	public:
-		explicit feed_exception(const std::string& what)
-			: std::runtime_error(what) {}
-		virtual ~feed_exception() throw() {}
-	};
+// exception
+class FEED_EXPORT feed_exception : public std::runtime_error {
+ public:
+  explicit feed_exception(const std::string& what) : std::runtime_error(what) {}
+  virtual ~feed_exception() throw() {}
+};
 
-	class FEED_EXPORT Feed
-	{
-	public:
-		typedef std::map< std::string, std::string > FeedElements;
-		explicit Feed(const std::string& url = std::string(), 
-					  const FeedConfig& feedConfig = FeedConfig());
-		~Feed();
+class FEED_EXPORT Feed {
+ public:
+  typedef std::map<std::string, std::string> FeedElements;
+  explicit Feed(const std::string& url = std::string(),
+                const FeedConfig& feedConfig = FeedConfig());
+  ~Feed();
 
-	public:
-		const std::string& operator[](const std::string& node) const;
-		const std::string& GetUrl() const;
-		const Entries& GetEntries() const;
-		const ::boost::posix_time::ptime& GetLastChecked() const;
-		void SetValidity(bool valid);
-		void SetFeedFormat(const FeedFormat& format);
-		void CheckFeed();
-		const FeedConfig& GetFeedConfig() {return m_feedConfig;}
+ public:
+  const std::string& operator[](const std::string& node) const;
+  const std::string& GetUrl() const;
+  const Entries& GetEntries() const;
+  const ::boost::posix_time::ptime& GetLastChecked() const;
+  void SetValidity(bool valid);
+  void SetFeedFormat(const FeedFormat& format);
+  void CheckFeed();
+  const FeedConfig& GetFeedConfig() { return m_feedConfig; }
 
-		// iterator interface to entries
-		typedef Entries::const_iterator entry_iterator;
-		typedef Entries::const_reverse_iterator reverse_entry_iterator;
+  // iterator interface to entries
+  typedef Entries::const_iterator entry_iterator;
+  typedef Entries::const_reverse_iterator reverse_entry_iterator;
 
-		entry_iterator begin_entries() const { return m_entries.begin(); }
-		entry_iterator end_entries() const { return m_entries.end(); }
-		reverse_entry_iterator rbegin_entries() const { return m_entries.rbegin(); }
-		reverse_entry_iterator rend_entries() const { return m_entries.rend(); }
+  entry_iterator begin_entries() const { return m_entries.begin(); }
+  entry_iterator end_entries() const { return m_entries.end(); }
+  reverse_entry_iterator rbegin_entries() const { return m_entries.rbegin(); }
+  reverse_entry_iterator rend_entries() const { return m_entries.rend(); }
 
-		int num_entries() const	{ return (int)m_entries.size(); }
+  int num_entries() const { return (int)m_entries.size(); }
 
-		// iterator interface to feed elements
-		typedef FeedElements::const_iterator feed_element_iterator;
-		typedef FeedElements::const_reverse_iterator reverse_feed_element_iterator;
+  // iterator interface to feed elements
+  typedef FeedElements::const_iterator feed_element_iterator;
+  typedef FeedElements::const_reverse_iterator reverse_feed_element_iterator;
 
-		feed_element_iterator begin_feed_elements() const { return m_feedElements.begin(); }
-		feed_element_iterator end_feed_elements() const { return m_feedElements.end(); }
-		reverse_feed_element_iterator rbegin_feed_elements() const { return m_feedElements.rbegin(); }
-		reverse_feed_element_iterator rend_feed_elements() const { return m_feedElements.rend(); }
+  feed_element_iterator begin_feed_elements() const {
+    return m_feedElements.begin();
+  }
+  feed_element_iterator end_feed_elements() const {
+    return m_feedElements.end();
+  }
+  reverse_feed_element_iterator rbegin_feed_elements() const {
+    return m_feedElements.rbegin();
+  }
+  reverse_feed_element_iterator rend_feed_elements() const {
+    return m_feedElements.rend();
+  }
 
-		int num_feed_elements() const { return (int)m_feedElements.size(); }
+  int num_feed_elements() const { return (int)m_feedElements.size(); }
 
-		// control
-		static void Initialize();
+  // control
+  static void Initialize();
 
-	private:
-		void CreateEntries(const std::string& feedData);
-		void AddEntryToList(const Entry& entry);
-	private:
-		FeedElements					m_feedElements;
-		std::string						m_etag;
-		std::string						m_url;
-		std::string						m_feedData;
-		Entries							m_entries;
-		boost::posix_time::ptime		m_lastChecked;
-		static bool						m_initialized;
-		static boost::recursive_mutex   m_stateMutex;
-		FeedFormat						m_format;
-		bool							m_valid;
-		FeedConfig						m_feedConfig;
-	};
+ private:
+  void CreateEntries(const std::string& feedData);
+  void AddEntryToList(const Entry& entry);
+
+ private:
+  FeedElements m_feedElements;
+  std::string m_etag;
+  std::string m_url;
+  std::string m_feedData;
+  Entries m_entries;
+  boost::posix_time::ptime m_lastChecked;
+  static bool m_initialized;
+  static boost::recursive_mutex m_stateMutex;
+  FeedFormat m_format;
+  bool m_valid;
+  FeedConfig m_feedConfig;
+};
 }
 #endif

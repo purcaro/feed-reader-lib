@@ -35,17 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "export_cfg.hpp"
 
-namespace FeedReader
-{
-	class FEED_EXPORT XmlGlobalState 
-	{
-	public:
-		XmlGlobalState();
-		~XmlGlobalState();
+namespace FeedReader {
+class FEED_EXPORT XmlGlobalState {
+ public:
+  XmlGlobalState();
+  ~XmlGlobalState();
 
-	private:
-		XmlGlobalState(const XmlGlobalState& xmlGlobalState) { } // disallow copying
-	};
+ private:
+  XmlGlobalState(const XmlGlobalState& xmlGlobalState) {}  // disallow copying
+};
 }
 
 #endif

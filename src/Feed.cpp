@@ -43,153 +43,117 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Utils.hpp"
 #include "Validator.hpp"
 
-namespace FeedReader
-{
-	bool Feed::m_initialized = false;
+namespace FeedReader {
+bool Feed::m_initialized = false;
 boost::recursive_mutex Feed::m_stateMutex;
 
-	Feed::Feed(const std::string& url, const FeedConfig& feedConfig) :
-		m_etag(),
-		m_url(url),
-		m_lastChecked(boost::date_time::min_date_time),
-		m_format(UNKNOWN_FEED_TYPE),
-	    m_valid(false),
-		m_feedConfig(feedConfig)
-	{
-		m_entries.reserve(20);
-	}
+Feed::Feed(const std::string& url, const FeedConfig& feedConfig)
+    : m_etag(),
+      m_url(url),
+      m_lastChecked(boost::date_time::min_date_time),
+      m_format(UNKNOWN_FEED_TYPE),
+      m_valid(false),
+      m_feedConfig(feedConfig) {
+  m_entries.reserve(20);
+}
 
-	Feed::~Feed()
-	{
-	}
+Feed::~Feed() {}
 
-	const std::string& Feed::operator[](const std::string& node) const
-	{
-		FeedElements::const_iterator itr = m_feedElements.find(node);
-		if (itr == m_feedElements.end())
-		{
-			static const std::string empty = "";
-			return empty;
-		}
+const std::string& Feed::operator[](const std::string& node) const {
+  FeedElements::const_iterator itr = m_feedElements.find(node);
+  if (itr == m_feedElements.end()) {
+    static const std::string empty = "";
+    return empty;
+  }
 
-		return itr->second;
-	}
+  return itr->second;
+}
 
-	const std::string& Feed::GetUrl() const
-	{
-		return m_url;
-	}
+const std::string& Feed::GetUrl() const { return m_url; }
 
-	const Entries& Feed::GetEntries() const
-	{
-		return m_entries;
-	}
+const Entries& Feed::GetEntries() const { return m_entries; }
 
-	const boost::posix_time::ptime& Feed::GetLastChecked() const
-	{
-		return m_lastChecked;
-	}
+const boost::posix_time::ptime& Feed::GetLastChecked() const {
+  return m_lastChecked;
+}
 
-	void Feed::CheckFeed()
-	{
-		m_lastChecked = boost::posix_time::microsec_clock::universal_time();
-		cURL::EasyInterface easy(m_url, m_etag);
-		switch (easy.PerformRequest())
-		{
-		case 200:
-			{
-				m_etag = easy.GetResponseEtag();
-				FeedValidator validator(easy.GetResponseData(), *this);
-				validator.Validate(m_feedData);
-				m_valid = true;
-				if (m_valid)
-				{
-					CreateEntries(m_feedData);
-				}
-				return;
-			}
-		case 304:
-			{
-				m_valid = true;
-				return;
-			}
-		default:
-			{
-				m_entries.clear();
-				m_valid = false;
-			}
-		}
-	}
+void Feed::CheckFeed() {
+  m_lastChecked = boost::posix_time::microsec_clock::universal_time();
+  cURL::EasyInterface easy(m_url, m_etag);
+  switch (easy.PerformRequest()) {
+    case 200: {
+      m_etag = easy.GetResponseEtag();
+      FeedValidator validator(easy.GetResponseData(), *this);
+      validator.Validate(m_feedData);
+      m_valid = true;
+      if (m_valid) {
+        CreateEntries(m_feedData);
+      }
+      return;
+    }
+    case 304: {
+      m_valid = true;
+      return;
+    }
+    default: {
+      m_entries.clear();
+      m_valid = false;
+    }
+  }
+}
 
-	void Feed::CreateEntries(const std::string& feedData)
-	{
-		const xercesc_2_8::MemBufInputSource input(reinterpret_cast<const XMLByte*>(
-															feedData.c_str()), feedData.size(), "");
-		xercesc_2_8::XercesDOMParser parser;
-		parser.setValidationScheme(xercesc_2_8::XercesDOMParser::Val_Never);
-		parser.parse(input);
-		if (!parser.getDocument()->hasChildNodes() ||
-			!parser.getDocument()->getChildNodes()->item(0)->hasChildNodes())
-		{
-			return;
-		}
+void Feed::CreateEntries(const std::string& feedData) {
+  const xercesc_2_8::MemBufInputSource input(
+      reinterpret_cast<const XMLByte*>(feedData.c_str()), feedData.size(), "");
+  xercesc_2_8::XercesDOMParser parser;
+  parser.setValidationScheme(xercesc_2_8::XercesDOMParser::Val_Never);
+  parser.parse(input);
+  if (!parser.getDocument()->hasChildNodes() ||
+      !parser.getDocument()->getChildNodes()->item(0)->hasChildNodes()) {
+    return;
+  }
 
-		const xercesc_2_8::DOMNodeList* const children =
-							parser.getDocument()->getChildNodes()->item(0)->getChildNodes();
-		for (XMLSize_t i = 0, listLength = children->getLength(); i < listLength; ++i)
-		{
-			const xercesc_2_8::DOMNode* const node = children->item(i);
-			const std::string nodeName = XmlCharsToStdString(node->getNodeName());
+  const xercesc_2_8::DOMNodeList* const children =
+      parser.getDocument()->getChildNodes()->item(0)->getChildNodes();
+  for (XMLSize_t i = 0, listLength = children->getLength(); i < listLength;
+       ++i) {
+    const xercesc_2_8::DOMNode* const node = children->item(i);
+    const std::string nodeName = XmlCharsToStdString(node->getNodeName());
 
-			if (nodeName == XERCESC_EMPTY_NODE_NAME)
-			{
-				continue;
-			}
-			if (xercesc_2_8::XMLString::equals(nodeName.c_str(), "entry"))
-			{
-				AddEntryToList(node);
-			}
-			else
-			{
-				const std::string textContent = XmlCharsToStdString(node->getTextContent());
-				m_feedElements[nodeName] = textContent;
-			}
-		}
-	}
+    if (nodeName == XERCESC_EMPTY_NODE_NAME) {
+      continue;
+    }
+    if (xercesc_2_8::XMLString::equals(nodeName.c_str(), "entry")) {
+      AddEntryToList(node);
+    } else {
+      const std::string textContent =
+          XmlCharsToStdString(node->getTextContent());
+      m_feedElements[nodeName] = textContent;
+    }
+  }
+}
 
-	void Feed::AddEntryToList(const Entry& entry)
-	{
-		const Entries::iterator findResult = std::find_if(m_entries.begin(),
-														  m_entries.end(),
-														  EntryUniqueIdPredicate(entry.UniqueId));
-		if (findResult == m_entries.end())
-		{
-			m_entries.push_back(entry);
-		}
-		else
-		{
-			*findResult = entry;
-		}
-	}
+void Feed::AddEntryToList(const Entry& entry) {
+  const Entries::iterator findResult =
+      std::find_if(m_entries.begin(), m_entries.end(),
+                   EntryUniqueIdPredicate(entry.UniqueId));
+  if (findResult == m_entries.end()) {
+    m_entries.push_back(entry);
+  } else {
+    *findResult = entry;
+  }
+}
 
-    void Feed::Initialize()
-	{
-		boost::recursive_mutex::scoped_lock lock(m_stateMutex);
-		if (!Feed::m_initialized)
-		{
-			static std::auto_ptr<cURL::GlobalState> curlGlobal(new cURL::GlobalState());
-			static std::auto_ptr<XmlGlobalState> xmlGlobal(new XmlGlobalState());
-			Feed::m_initialized = true;
-		}
-	}
+void Feed::Initialize() {
+  boost::recursive_mutex::scoped_lock lock(m_stateMutex);
+  if (!Feed::m_initialized) {
+    static std::auto_ptr<cURL::GlobalState> curlGlobal(new cURL::GlobalState());
+    static std::auto_ptr<XmlGlobalState> xmlGlobal(new XmlGlobalState());
+    Feed::m_initialized = true;
+  }
+}
 
-	void Feed::SetValidity(bool valid)
-	{
-		m_valid = valid;
-	}
+void Feed::SetValidity(bool valid) { m_valid = valid; }
 
-	void Feed::SetFeedFormat(const FeedFormat& format)
-	{
-		m_format = format;
-	}
+void Feed::SetFeedFormat(const FeedFormat& format) { m_format = format; }
 }

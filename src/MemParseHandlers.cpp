@@ -33,24 +33,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "StdAfx.hpp"
 #include "MemParseHandlers.hpp"
 
-MemParseHandlers::MemParseHandlers() :
-	xercesc_2_8::HandlerBase(),
-	_success(true)
-{
+MemParseHandlers::MemParseHandlers()
+    : xercesc_2_8::HandlerBase(), _success(true) {}
+
+bool MemParseHandlers::GetSuccess() { return _success; }
+
+void MemParseHandlers::error(const xercesc_2_8::SAXParseException& ex) {
+  _success = false;
 }
 
-bool MemParseHandlers::GetSuccess()
-{
-	return _success;
-}
-
-void MemParseHandlers::error(const xercesc_2_8::SAXParseException& ex)
-{
-	_success = false;
-}
-
-void MemParseHandlers::fatalError(const xercesc_2_8::SAXParseException& ex)
-{
-	const XMLCh* foo = ex.getMessage();
-	_success = false;
+void MemParseHandlers::fatalError(const xercesc_2_8::SAXParseException& ex) {
+  const XMLCh* foo = ex.getMessage();
+  _success = false;
 }
