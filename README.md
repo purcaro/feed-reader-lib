@@ -30,15 +30,16 @@ The FeedReader library is dependent on, and was tested with the following librar
 
 ===============
 FeedReader was created by Yoav Aviram (yoav.aviram AT gmail DOT com)
+
 FeedReader was migrated to GitHub by Michael Purcaro (purcaro AT gmail DOT com)
 
 ===============
 converted from https://code.google.com/p/feed-reader-lib/ by
-git svn clone --stdlayout --no-metadata -A authors  http://feed-reader-lib.googlecode.com/svn/
-git remote add origin git@github.com:purcaro/feed-reader-lib.git
-git config branch.master.remote origin
-git config branch.master.merge refs/heads/master
+* git svn clone --stdlayout --no-metadata -A authors  http://feed-reader-lib.googlecode.com/svn/
+* git remote add origin git@github.com:purcaro/feed-reader-lib.git
+* git config branch.master.remote origin
+* git config branch.master.merge refs/heads/master
 
 authors.txt file:
-(no author) = no_author <no_author@no_author>
-yoav.aviram = Yoav Aviram <yoav.aviram@gmail.com>
+* (no author) = no_author <no_author@no_author>
+* yoav.aviram = Yoav Aviram <yoav.aviram@gmail.com>
